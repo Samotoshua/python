@@ -1,0 +1,97 @@
+def main():
+    try:
+        line = input()
+        if not line:
+            return
+        states_count = int(line)
+    except ValueError:
+        return
+
+    state_points = {}
+    for _ in range(states_count):
+        line = input()
+        parts = line.split()
+        state = parts[0]
+        points = int(parts[1])
+        state_points[state] = points
+
+    votes_data = {}
+    candidates = []
+
+    while True:
+        line = input()
+        if line == "":
+            break
+        
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+            
+        state = parts[0]
+        name = parts[1]
+
+        found = False
+        for c in candidates:
+            if c == name:
+                found = True
+                break
+        if not found:
+            candidates.append(name)
+
+        if state not in votes_data:
+            votes_data[state] = {}
+        
+        if name not in votes_data[state]:
+            votes_data[state][name] = 0
+        
+        votes_data[state][name] += 1
+
+    final_scores = {}
+    for name in candidates:
+        final_scores[name] = 0
+
+    for state in votes_data:
+        state_candidates = votes_data[state]
+        
+        winner = ""
+        max_votes = -1
+        
+        for name in state_candidates:
+            count = state_candidates[name]
+            
+            if count > max_votes:
+                max_votes = count
+                winner = name
+            elif count == max_votes:
+                if winner == "" or name < winner:
+                    winner = name
+        
+        if winner != "" and state in state_points:
+            final_scores[winner] += state_points[state]
+
+    results = []
+    for name in final_scores:
+        results.append([name, final_scores[name]])
+
+    n = len(results)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            p1 = results[j]
+            p2 = results[j + 1]
+            
+            swap = False
+            
+            if p2[1] > p1[1]:
+                swap = True
+            elif p2[1] == p1[1]:
+                if p1[0] > p2[0]:
+                    swap = True
+            
+            if swap:
+                results[j], results[j + 1] = results[j + 1], results[j]
+
+    for item in results:
+        print(f"{item[0]} {item[1]}")
+
+if __name__ == "__main__":
+    main()
